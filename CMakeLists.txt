@@ -20,7 +20,14 @@ find_package(Qt6 REQUIRED COMPONENTS Widgets Multimedia OpenGLWidgets Core Gui)
 find_package(libprojectM REQUIRED)
 
 # Sources
-set(SRC_CORE    src/main.cpp src/core/PathUtils.h src/core/Logger.cpp src/core/Logger.h src/core/StringUtils.h)
+set(SRC_CORE    src/main.cpp 
+                src/core/PathUtils.h src/core/StringUtils.h
+                src/core/Logger.cpp src/core/Logger.h
+                # Debug/Production System
+                src/core/DebugManager.cpp src/core/DebugManager.h
+                src/core/ErrorManager.cpp src/core/ErrorManager.h
+                src/core/PerformanceManager.cpp src/core/PerformanceManager.h
+                src/core/PluginManager.cpp src/core/PluginManager.h)
 set(SRC_DATA    src/data/SettingsManager.cpp src/data/SettingsManager.h src/core/TextFormatter.h)
 set(SRC_ENGINE  src/engine/VizEngine.cpp src/engine/VizEngine.h 
                 src/engine/VideoRecorder.cpp src/engine/VideoRecorder.h

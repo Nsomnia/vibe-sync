@@ -106,4 +106,3 @@ set(SOURCES
 # Add Qt sources if found
 if(QT6_FOUND)
     list(APPEND SOURCES ${QT_SOURCES})
-endif()

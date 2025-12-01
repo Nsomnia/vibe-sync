@@ -1,29 +1,81 @@
-cmake_minimum_required(VERSION 3.24)
-project(NeonVisualizer VERSION 1.2.0 LANGUAGES CXX C)
+# --- START MERGED CONFIGURATION ---
+set(CMAKE_CXX_STANDARD_REQUIRED ON)
+set(CMAKE_CXX_EXTENSIONS OFF)
 
-set(CMAKE_CXX_STANDARD 20)
+# Qt settings (From your branch - keep these on)
 set(CMAKE_AUTOMOC ON)
 set(CMAKE_AUTORCC ON)
 set(CMAKE_AUTOUIC ON)
 
-# --- DEBUGGING OPTIONS ---
-option(ENABLE_SANITIZERS "Enable Address/Leak Sanitizers" OFF)
-
-if(ENABLE_SANITIZERS)
-    message(STATUS "🛡️  Enabling Address Sanitizer (Anti-Doughnut Shield)...")
-    add_compile_options(-fsanitize=address -fsanitize=leak -fno-omit-frame-pointer -g)
-    add_link_options(-fsanitize=address -fsanitize=leak)
+# Platform detection (From main - keep this, it's robust)
+if(CMAKE_SYSTEM_NAME STREQUAL "Linux")
+    set(LINUX TRUE)
+elseif(CMAKE_SYSTEM_NAME STREQUAL "Windows")
+    set(WINDOWS TRUE)
+elseif(CMAKE_SYSTEM_NAME STREQUAL "Darwin")
+    set(MACOS TRUE)
 endif()
 
-# Dependencies
-find_package(Qt6 REQUIRED COMPONENTS Widgets Multimedia OpenGLWidgets Core Gui)
-find_package(libprojectM REQUIRED)
+# Build type (From main)
+if(NOT CMAKE_BUILD_TYPE)
+    set(CMAKE_BUILD_TYPE Release CACHE STRING "Choose the type of build." FORCE)
+    set_property(CACHE CMAKE_BUILD_TYPE PROPERTY STRINGS "Debug" "Release" "MinSizeRel" "RelWithDebInfo")
+endif()
 
-# Sources
-set(SRC_CORE    src/main.cpp 
-                src/core/PathUtils.h src/core/StringUtils.h
+# Release optimizations (From main)
+set(CMAKE_CXX_FLAGS_RELEASE "-O3 -DNDEBUG")
+set(CMAKE_CXX_FLAGS_DEBUG "-g -O0")
+set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -Wall -Wextra -Wpedantic")
+
+# Dependencies (From main - safer optional checking)
+find_package(Qt6 COMPONENTS Core Widgets QUIET)
+if(Qt6_FOUND)
+    set(QT6_FOUND TRUE)
+    message(STATUS "Qt6 found: ${Qt6_VERSION}")
+else()
+    set(QT6_FOUND FALSE)
+    message(WARNING "Qt6 not found - building without GUI support")
+endif()
+
+find_package(ProjectM QUIET)
+if(ProjectM_FOUND)
+    set(PROJECTM_FOUND TRUE)
+    message(STATUS "ProjectM found")
+else()
+    set(PROJECTM_FOUND FALSE)
+    message(WARNING "ProjectM not found - visualizer will be disabled")
+endif()
+
+find_package(tomlplusplus QUIET)
+if(tomlplusplus_FOUND)
+    set(TOMLPLUSPLUS_FOUND TRUE)
+    message(STATUS "TOML++ found")
+else()
+    set(TOMLPLUSPLUS_FOUND FALSE)
+    message(WARNING "TOML++ not found - using basic config parsing")
+endif()
+
+# Core dependencies (pkg-config)
+find_package(PkgConfig QUIET)
+if(PkgConfig_FOUND)
+    pkg_check_modules(SDL2 QUIET sdl2)
+    pkg_check_modules(ALSA QUIET alsa)
+    pkg_check_modules(FFMPEG QUIET libavcodec libavformat libavutil libavfilter libswscale libswresample)
+    pkg_check_modules(TAGLIB QUIET taglib)
+    pkg_check_modules(FREETYPE QUIET freetype2)
+    pkg_check_modules(OPENGL QUIET opengl)
+endif()
+
+# Include directories
+include_directories(
+    ${CMAKE_CURRENT_SOURCE_DIR}
+    ${CMAKE_CURRENT_SOURCE_DIR}/src
+    ${CMAKE_BINARY_DIR}
+)
+
+# --- SOURCE DEFINITIONS (From your branch) ---
+set(SRC_CORE    src/core/PathUtils.h src/core/StringUtils.h
                 src/core/Logger.cpp src/core/Logger.h
-                # Debug/Production System
                 src/core/DebugManager.cpp src/core/DebugManager.h
                 src/core/ErrorManager.cpp src/core/ErrorManager.h
                 src/core/PerformanceManager.cpp src/core/PerformanceManager.h
@@ -40,7 +92,9 @@ set(SRC_UI_WIDG src/ui/widgets/VisualizerView.cpp src/ui/widgets/VisualizerView.
                 src/ui/widgets/PlaylistWidget.h src/ui/widgets/DebugConsole.h)
 set(SRC_UI_MAIN src/ui/MainWindow.cpp src/ui/MainWindow.h src/ui/dialogs/SettingsDialog.h)
 
-add_executable(NeonVisualizer
+# Combine sources into one list (Merging Main's structure with your files)
+set(SOURCES
+    src/main.cpp
     ${SRC_CORE}
     ${SRC_DATA}
     ${SRC_ENGINE}
@@ -49,15 +103,7 @@ add_executable(NeonVisualizer
     ${SRC_UI_MAIN}
 )
 
-target_link_libraries(NeonVisualizer PRIVATE
-    Qt6::Widgets
-    Qt6::Multimedia
-    Qt6::OpenGLWidgets
-    projectM::projectM
-)
-
-target_include_directories(NeonVisualizer PRIVATE src)
-
-# Install target
-install(TARGETS NeonVisualizer DESTINATION bin)
-install(FILES ${CMAKE_CURRENT_SOURCE_DIR}/README.md DESTINATION share/doc/NeonVisualizer)
+# Add Qt sources if found
+if(QT6_FOUND)
+    list(APPEND SOURCES ${QT_SOURCES})
+endif()

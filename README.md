@@ -1,201 +1,312 @@
-# vibe-sync
+# Vibe-Sync
 
-AI-powered music video creator using projectM Linux audio visualizer as the base. Generate stunning synchronized music visualizations with AI intelligence.
+AI-powered music visualizer with advanced text overlay system and video recording capabilities.
 
 ## Overview
 
-vibe-sync is a sophisticated C++/Qt music player that transforms your audio experience into mesmerizing visual content. Built on top of the legendary projectM visualizer, it provides professional-grade video recording capabilities with advanced text overlay systems.
+Vibe-Sync is a sophisticated C++ application that transforms your music into stunning visual experiences using ProjectM audio visualization. It combines the legendary ProjectM visualizer with modern AI features, advanced text overlay systems, and professional-grade video recording capabilities.
 
-## Features
+## ✨ Features
 
 ### 🎵 Core Functionality
-- **ProjectM Integration**: Full projectM visualizer support with custom preset management
-- **Smart Playlist**: Drag-and-drop music loading with metadata extraction
+- **ProjectM Integration**: Full audio visualization with custom preset support
+- **Smart Music Player**: Drag-and-drop playlist with metadata extraction
 - **High-Quality Recording**: FFmpeg-powered video capture with customizable encoding
 - **Advanced Text Engine**: Resolution-independent text overlays with animation effects
 
 ### 🎨 Visual Customization
-- **Resolution Independent**: Text scales perfectly from 720p to 4K
-- **Animation Effects**: Breathing text, sliding effects, and custom positioning
+- **Resolution Independent**: Perfect scaling from 720p to 4K
+- **Animation Effects**: Breathing text, sliding effects, custom positioning
 - **Watermark System**: Persistent branding with customizable text and position
-- **Preset Management**: Favorites, blacklist, and quarantine system for presets
+- **Preset Management**: Favorites, blacklist, and quarantine system
 
 ### 🛠️ Developer Features
 - **Debug Console**: Real-time logging with color-coded output
 - **Address Sanitizer**: Memory leak detection and debugging support
-- **Settings System**: Persistent configuration with QSettings
+- **Configuration System**: Persistent settings with TOML support
 - **Modular Architecture**: Clean separation of concerns
 
-## Installation
+## 🚀 Quick Start
 
-### Prerequisites (Ubuntu/Debian)
+### Automatic Build (Recommended)
 ```bash
-sudo apt update
-sudo apt install qt6-base-dev libprojectm-dev libtag1-dev ffmpeg build-essential cmake
-```
-
-### Build Instructions
-```bash
-# Clone and build
+# Clone the repository
 git clone <repository-url>
 cd vibe-sync
+
+# Run the automated build script
+bash build.sh
+```
+
+### Manual Build
+```bash
+# If you have CMake and dependencies:
 mkdir build && cd build
+cmake .. && make -j$(nproc)
 
-# Configure with sanitizers (optional)
-cmake .. -DENABLE_SANITIZERS=ON
-
-# Build
-make -j$(nproc)
-
-# Run
-./NeonVisualizer
+# If you only have Make:
+make
 ```
 
-### Dependencies
-- **Qt6**: Modern GUI framework
-- **projectM**: Audio visualization engine
-- **TagLib**: Audio metadata extraction
-- **FFmpeg**: Video encoding and processing
+### Test the Build
+```bash
+# Check version and features
+./vibe-sync --version
 
-## Usage
+# Verify system dependencies
+./vibe-sync --check-deps
 
-### Basic Workflow
-1. **Load Music**: Use File > Add Files or drag audio files into the playlist
-2. **Select Preset**: Browse through visualizer presets using the control panel
-3. **Customize Text**: Configure watermarks and text overlays in Settings
-4. **Record**: Click "Start Recording" to capture your music video
+# Get detailed build information
+./vibe-sync --build-info
 
-### Controls
-- **Playlist Dock**: Left panel with drag-and-drop music loading
-- **Visualizer Controls**: Right panel with preset management and recording
-- **Debug Console**: Bottom panel with real-time system logging
-
-### Text Overlay System
-The resolution-independent text engine supports:
-- **Relative Positioning**: Use 0.0-1.0 coordinates for screen-independent placement
-- **Animation Effects**: Breathing, sliding, and custom timing
-- **Global Scaling**: Adjust all text sizes uniformly
-- **Multiple Elements**: Simultaneous artist info and watermarks
-
-## Project Structure
-
-```
-src/
-├── core/           # Core utilities
-│   ├── Logger.h/cpp       # Debug logging system
-│   ├── StringUtils.h      # String manipulation utilities
-│   ├── PathUtils.h        # Path handling utilities
-│   └── TextFormatter.h    # Audio metadata parsing
-├── engine/         # Core engines
-│   ├── TextEngine.h/cpp   # Text rendering system
-│   ├── AudioEngine.h/cpp  # Audio playback
-│   ├── VideoRecorder.h/cpp # Video capture
-│   ├── PresetManager.h/cpp # Preset management
-│   ├── PlaylistManager.h/cpp # Playlist handling
-│   └── VizEngine.h/cpp    # ProjectM wrapper
-├── ui/             # User interface
-│   ├── MainWindow.h/cpp   # Main application window
-│   ├── widgets/          # Custom UI components
-│   ├── menus/           # Menu bar implementation
-│   └── dialogs/         # Settings and configuration
-└── data/           # Data management
-    └── SettingsManager.h/cpp # Configuration system
+# Show help
+./vibe-sync --help
 ```
 
-## Configuration
+## 📋 Prerequisites
 
-### Settings Dialog
-- **Visualizer**: Preset paths, mesh size, FPS, beat sensitivity
-- **Typography**: Text overlays, watermarks, scaling options
-- **Recording**: FFmpeg command templates and encoding settings
+### For Full Functionality
+```bash
+# Ubuntu/Debian
+sudo apt update
+sudo apt install qt6-base-dev qt6-multimedia-dev libprojectm-dev \
+                 libtag1-dev ffmpeg build-essential cmake pkg-config \
+                 libsdl2-dev libasound2-dev libfreetype6-dev
 
-### Key Settings
-```ini
-[viz]
-preset_path=/usr/share/projectM/presets
-shuffle=true
-fps=60
-
-[overlay]
-watermark_visible=false
-watermark_text=your-site.com
-global_scale=1.0
-
-[recording]
-ffmpeg_cmd=ffmpeg -y -f rawvideo -vcodec rawvideo -pix_fmt bgra -s {WIDTH}x{HEIGHT} -r {FPS} -i - -c:v libx264 -preset ultrafast -crf 18 {OUTPUT}
+# RHEL/CentOS
+sudo dnf install qt6-qtbase-devel qt6-qtmultimedia-devel projectM-devel \
+                 taglib-devel ffmpeg-devel gcc-c++ make cmake pkg-config \
+                 SDL2-devel alsa-lib-devel freetype-devel
 ```
 
-## Advanced Features
+### Minimal Build (Console Mode)
+- **Compiler**: GCC 10+ or Clang 10+
+- **C++ Standard**: C++20
+- **Build Tools**: Make or CMake
+
+The application will automatically adapt to available dependencies:
+- ✅ **Full GUI**: With Qt6, ProjectM, and dependencies
+- ✅ **Console Mode**: Basic functionality without GUI
+- ✅ **Minimal Build**: Core features only
+
+## 🏗️ Build System
+
+### Supported Build Methods
+
+1. **Automated Build Script** (`build.sh`)
+   - Detects available dependencies
+   - Attempts to install missing packages
+   - Falls back to minimal build if needed
+
+2. **CMake** (When available)
+   ```bash
+   mkdir build && cd build
+   cmake ..
+   make -j$(nproc)
+   ```
+
+3. **Makefile** (Fallback)
+   ```bash
+   make
+   ```
+
+### Dependency Detection
+
+The build system automatically detects and adapts to available packages:
+
+| Feature | Required Package | Build Status |
+|---------|------------------|--------------|
+| GUI Framework | Qt6 | Optional |
+| Visualizer | ProjectM | Optional |
+| Config Parsing | TOML++ | Optional |
+| Audio Processing | SDL2, ALSA | Optional |
+| Video Recording | FFmpeg | Optional |
+| Metadata | TagLib | Optional |
+
+## 🔧 Configuration
+
+### Default Configuration Files
+- `config/default-settings.toml` - Application settings
+- `config/audio-presets.toml` - Audio processing presets  
+- `config/video-presets.toml` - Video recording presets
+- `config/help.html` - User help documentation
+
+### Command Line Options
+```bash
+./vibe-sync --help           # Show help
+./vibe-sync --version        # Show version
+./vibe-sync --check-deps     # Check dependencies
+./vibe-sync --build-info     # Detailed build info
+```
+
+### Environment Variables
+```bash
+# Override config directory
+export VIBE_SYNC_CONFIG_DIR="/path/to/config"
+
+# Enable debug mode
+export VIBE_SYNC_DEBUG=1
+```
+
+## 🎯 Usage Examples
+
+### Basic Usage
+1. **Load Music**: Drag audio files into the playlist
+2. **Select Preset**: Browse visualizer presets
+3. **Configure Text**: Set up watermarks and overlays
+4. **Record Video**: Capture your music visualization
+
+### Advanced Recording
+```bash
+# High quality recording
+./vibe-sync --preset "crown" --quality ultra
+
+# Custom output location
+./vibe-sync --output "/path/to/video.mp4"
+
+# Debug mode
+./vibe-sync --debug --log-level 5
+```
+
+## 🏛️ Project Structure
+
+```
+vibe-sync/
+├── src/                     # Source code
+│   ├── main.cpp            # Application entry point
+│   ├── core/               # Core utilities and systems
+│   ├── engine/             # Audio/visual engines
+│   ├── ui/                 # User interface components
+│   ├── integrations/       # External library integrations
+│   ├── utils/              # Utility functions
+│   └── debug/              # Debug and monitoring
+├── config/                  # Configuration files
+├── assets/                  # Application assets
+├── docs/                    # Documentation
+├── build.sh                # Automated build script
+├── Makefile                # Fallback build system
+└── CMakeLists.txt          # CMake build configuration
+```
+
+## 🐛 Troubleshooting
+
+### Build Issues
+
+**CMake not found:**
+```bash
+# Install CMake
+sudo apt install cmake
+
+# Or use Makefile fallback
+make
+```
+
+**Qt6 not found:**
+```bash
+# Install Qt6 development packages
+sudo apt install qt6-base-dev qt6-multimedia-dev
+
+# Build will continue in console mode
+```
+
+**ProjectM not found:**
+```bash
+# Install ProjectM
+sudo apt install libprojectm-dev
+
+# Visualizer will be disabled
+```
+
+### Runtime Issues
+
+**Permission denied on build script:**
+```bash
+# Run with bash directly
+bash build.sh
+```
+
+**Missing dependencies at runtime:**
+```bash
+# Check what's available
+./vibe-sync --check-deps
+
+# Install missing packages
+sudo apt install <package-name>
+```
+
+### Common Solutions
+
+1. **Clean rebuild:**
+   ```bash
+   rm -rf build
+   bash build.sh
+   ```
+
+2. **Check compiler version:**
+   ```bash
+   g++ --version  # Need C++20 support
+   ```
+
+3. **Verify library paths:**
+   ```bash
+   pkg-config --list-all | grep -E "(qt6|projectM|ffmpeg)"
+   ```
+
+## 🧪 Testing
+
+### Build Verification
+```bash
+# Test basic functionality
+./vibe-sync --version
+./vibe-sync --check-deps
+
+# Test all features
+make test  # (when tests are available)
+```
 
 ### Debug Mode
-Enable the debug console for real-time system monitoring:
-- Color-coded log levels (Debug, Info, Warning, Critical)
-- Automatic scrolling and line highlighting
-- Integration with Qt's message system
-
-### Memory Safety
-Built-in Address Sanitizer support for development:
 ```bash
-cmake .. -DENABLE_SANITIZERS=ON
-./NeonVisualizer
+# Enable all debug output
+./vibe-sync --debug --log-level 5
+
+# Check memory leaks
+valgrind ./vibe-sync --test-mode
 ```
 
-### Preset Management
-- **Favorites**: Mark preferred presets for quick access
-- **Blacklist**: Permanently hide unwanted presets
-- **Quarantine**: Temporary exclusion with manual review
-- **Smart Filtering**: Automatic preset validation and cleanup
+## 🚧 Development
 
-## Troubleshooting
+### Adding Dependencies
 
-### Common Issues
-1. **No Presets Found**: Ensure projectM presets are installed
-   ```bash
-   sudo apt install projectm-data
-   ```
-2. **Recording Fails**: Check FFmpeg installation and permissions
-3. **Audio Issues**: Verify Qt Multimedia backend support
+1. **Update CMakeLists.txt** to find the new package
+2. **Modify main.cpp** to use conditional compilation
+3. **Test build** with and without the dependency
 
-### Debug Information
-The debug console provides detailed runtime information:
-- Preset loading status
-- Audio engine state
-- Recording progress
-- Memory usage statistics
+### Code Style
+- Follow C++20 standards
+- Use RAII principles
+- Implement proper error handling
+- Add comprehensive logging
 
-## Development
-
-### Architecture
-- **Model-View Pattern**: Clear separation of data and presentation
-- **Signal-Slot Communication**: Qt's reactive programming model
-- **Resource Management**: RAII principles and smart pointers
-- **Thread Safety**: Mutex protection for concurrent access
-
-### Adding Features
-1. **New Text Elements**: Extend `TextEngine` with custom animations
-2. **Custom Presets**: Add preset parsing for new visualizer formats
-3. **Recording Options**: Modify `VideoRecorder` for additional formats
-4. **UI Components**: Create new dock widgets for specialized views
-
-## Contributing
-
+### Contribution Guidelines
 1. Fork the repository
-2. Create a feature branch: `git checkout -b feature/new-feature`
-3. Make changes with proper testing
-4. Enable sanitizers for memory safety: `cmake .. -DENABLE_SANITIZERS=ON`
-5. Submit a pull request with detailed description
+2. Create feature branch: `git checkout -b feature-name`
+3. Test with minimal dependencies
+4. Update documentation
+5. Submit pull request
 
-## License
+## 📄 License
 
-This project is open source. Please see LICENSE file for details.
+This project is open source. See LICENSE file for details.
 
-## Acknowledgments
+## 🙏 Acknowledgments
 
-- **projectM Team**: For the legendary audio visualizer engine
-- **Qt Framework**: For the robust cross-platform UI toolkit
-- **FFmpeg**: For comprehensive multimedia processing
-- **TagLib**: For reliable audio metadata extraction
+- **ProjectM Team** - Audio visualization engine
+- **Qt Framework** - Cross-platform UI toolkit  
+- **FFmpeg** - Multimedia processing
+- **MiniMax** - AI integration and support
 
 ---
 
-**vibe-sync** - Where AI meets music visualization 🎵✨
+**Vibe-Sync** - AI-powered music visualization platform 🎵✨
+
+For support and questions, please check the troubleshooting section or create an issue.
